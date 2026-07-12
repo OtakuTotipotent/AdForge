@@ -8,5 +8,5 @@
   "files.eol": "\n",
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
-  "cSpell.words": ["adforge"]
+  "cSpell.words": ["adforge", "GROQ", "OPENROUTER"]
 }
