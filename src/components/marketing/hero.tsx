@@ -37,6 +37,12 @@ export function Hero() {
           <span>✓ Secure Storage</span>
           <span>✓ Credit-Based Usage</span>
         </div>
+
+        <div className="mt-12 flex justify-center">
+          <p className="text-muted-foreground text-sm">
+            Trusted by creators, startups, and growing businesses.
+          </p>
+        </div>
       </div>
     </section>
   );

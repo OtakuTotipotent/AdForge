@@ -1,4 +1,4 @@
-import { FEATURES } from "@/constants/features";
+import { FEATURES } from "@/content/marketing/features";
 
 import { FeatureCard } from "./feature-card";
 
