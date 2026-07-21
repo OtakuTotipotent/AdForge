@@ -18,3 +18,22 @@ export const marketingNavigation = [
     href: ROUTES.ABOUT,
   },
 ] as const;
+
+export const appNavigation = [
+  {
+    title: "Generate",
+    href: ROUTES.GENERATE,
+  },
+  {
+    title: "Collections",
+    href: ROUTES.COLLECTIONS,
+  },
+  {
+    title: "Community",
+    href: ROUTES.COMMUNITY,
+  },
+  {
+    title: "Pricing",
+    href: ROUTES.PRICING,
+  },
+] as const;
