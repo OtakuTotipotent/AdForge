@@ -1,5 +1,3 @@
-import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
 import { PageContainer } from "@/components/layout/page-container";
 import { ReactNode } from "react";
 
@@ -10,11 +8,9 @@ interface MarketingLayoutProps {
 export default function MarketingLayout({ children }: MarketingLayoutProps) {
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
 
       <PageContainer>{children}</PageContainer>
-
-      <Footer />
     </>
   );
 }

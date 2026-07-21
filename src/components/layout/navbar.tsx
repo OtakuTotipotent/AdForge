@@ -6,10 +6,14 @@ import { Logo } from "@/components/shared/logo";
 export function Navbar() {
   return (
     <header className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur">
-      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+        {/* Logo */}
+
         <Logo />
 
-        <div className="flex items-center gap-8">
+        {/* Navigation */}
+
+        <nav className="hidden gap-8 md:flex">
           {marketingNavigation.map((item) => (
             <Link
               key={item.href}
@@ -19,8 +23,12 @@ export function Navbar() {
               {item.title}
             </Link>
           ))}
-        </div>
-      </nav>
+        </nav>
+
+        {/* Placeholder */}
+
+        <div className="text-muted-foreground text-sm">Sign In</div>
+      </div>
     </header>
   );
 }
