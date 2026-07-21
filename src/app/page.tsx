@@ -1,4 +1,4 @@
-import { Features, Hero, HowItWorks } from "@/components/marketing";
+import { Features, Hero, HowItWorks, PricingPreview } from "@/components/marketing";
 
 export default function HomePage() {
   return (
@@ -8,6 +8,8 @@ export default function HomePage() {
       <Features />
 
       <HowItWorks />
+
+      <PricingPreview />
     </>
   );
 }
