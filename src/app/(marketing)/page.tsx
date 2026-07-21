@@ -1,3 +1,15 @@
+import { Features, Hero, HowItWorks, PricingPreview } from "@/components/marketing";
+
 export default function HomePage() {
-  return <h1>Welcome to AdForge - AI-Powered Ads Creation</h1>;
+  return (
+    <>
+      <Hero />
+
+      <Features />
+
+      <HowItWorks />
+
+      <PricingPreview />
+    </>
+  );
 }

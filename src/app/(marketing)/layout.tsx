@@ -8,8 +8,6 @@ interface MarketingLayoutProps {
 export default function MarketingLayout({ children }: MarketingLayoutProps) {
   return (
     <>
-      {/* <Navbar /> */}
-
       <PageContainer>{children}</PageContainer>
     </>
   );
