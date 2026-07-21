@@ -1,7 +1,6 @@
-import Link from "next/link";
-
 import { appNavigation } from "@/config/navigation";
 import { Logo } from "@/components/shared/logo";
+import { NavLink } from "@/components/navigation/nav-link";
 
 export function AppSidebar() {
   return (
@@ -12,13 +11,9 @@ export function AppSidebar() {
 
       <nav className="space-y-1 p-4">
         {appNavigation.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="hover:bg-muted block rounded-md px-3 py-2 text-sm font-medium transition-colors"
-          >
+          <NavLink key={item.href} href={item.href}>
             {item.title}
-          </Link>
+          </NavLink>
         ))}
       </nav>
     </aside>
