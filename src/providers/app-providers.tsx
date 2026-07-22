@@ -1,7 +1,11 @@
+"use client";
+
+import { ClerkProvider } from "@clerk/nextjs";
+
 interface ProvidersProps {
   children: React.ReactNode;
 }
 
 export function AppProviders({ children }: ProvidersProps) {
-  return children;
+  return <ClerkProvider>{children}</ClerkProvider>;
 }
