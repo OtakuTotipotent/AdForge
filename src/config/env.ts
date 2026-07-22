@@ -7,7 +7,7 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "test", "production"]),
 
     // Database
-    MONGODB_URI: z.url(),
+    MONGODB_URI: z.string().min(1),
 
     // Authentication
     CLERK_SECRET_KEY: z.string().min(1),
