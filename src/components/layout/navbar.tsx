@@ -1,12 +1,13 @@
 import { marketingNavigation } from "@/config/navigation";
 import { Logo } from "@/components/shared/logo";
 import { NavLink } from "@/components/navigation/nav-link";
+import { AuthButtons } from "@/components/auth/auth-buttons";
 
 export function Navbar() {
   return (
     <header className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        {/* Logo */}
+        {/* AdForge Logo */}
         <Logo />
 
         {/* Navigation */}
@@ -18,8 +19,8 @@ export function Navbar() {
           ))}
         </nav>
 
-        {/* Placeholder */}
-        <div className="text-muted-foreground text-sm">Sign In</div>
+        {/* Authentication */}
+        <AuthButtons />
       </div>
     </header>
   );
