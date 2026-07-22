@@ -1,18 +1,23 @@
-// import { env } from "@/config/env";
-
 export const siteConfig = {
   name: "AdForge AI",
 
-  description: "...",
+  shortName: "AdForge",
 
-  // url: env.NEXT_PUBLIC_APP_URL,
-  url: "http://localhost:3000",
+  description: "Generate professional AI advertisements, marketing images and videos in minutes.",
 
-  ogImage: "/og-image.png",
+  url: process.env.NEXT_PUBLIC_APP_URL!,
 
-  links: {
-    github: "...",
-    x: "...",
-    docs: "...",
-  },
+  creator: "OtakuTotipotent@github.com",
+
+  keywords: [
+    "AI",
+    "Advertising",
+    "Marketing",
+    "Image Generation",
+    "Video Generation",
+    "Next.js",
+    "SaaS",
+  ],
+
+  github: "https://github.com/OtakuTotipotent/AdForge",
 } as const;

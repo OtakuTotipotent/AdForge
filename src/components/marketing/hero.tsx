@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 import { Button } from "../ui/button";
+import { siteConfig } from "@/config/site";
 
 export function Hero() {
   return (
@@ -15,8 +16,7 @@ export function Hero() {
         </h1>
 
         <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg">
-          Upload your product. Add a prompt. Let AdForge AI generate high-quality marketing images
-          and videos for your business.
+          {siteConfig.description}
         </p>
 
         <div className="mt-10 flex flex-wrap justify-center gap-4">
