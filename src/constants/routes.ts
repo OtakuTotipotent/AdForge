@@ -16,4 +16,8 @@ export const ROUTES = {
   SIGN_UP: "/sign-up",
 
   PROFILE: "/profile",
+
+  SETTINGS: "/settings",
+
+  DASHBOARD: "/dashboard",
 } as const;

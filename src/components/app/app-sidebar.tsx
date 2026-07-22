@@ -1,4 +1,4 @@
-import { appNavigation } from "@/config/navigation";
+import { dashboardNavigation } from "@/config/navigation";
 import { Logo } from "@/components/shared/logo";
 import { NavLink } from "@/components/navigation/nav-link";
 
@@ -10,7 +10,7 @@ export function AppSidebar() {
       </div>
 
       <nav className="space-y-1 p-4">
-        {appNavigation.map((item) => (
+        {dashboardNavigation.map((item) => (
           <NavLink key={item.href} href={item.href}>
             {item.title}
           </NavLink>
