@@ -12,6 +12,8 @@ export const env = createEnv({
     // Authentication
     CLERK_SECRET_KEY: z.string().min(1),
 
+    CLERK_WEBHOOK_SECRET: z.string().min(1),
+
     // Storage
     CLOUDINARY_API_KEY: z.string().min(1),
 
@@ -51,6 +53,8 @@ export const env = createEnv({
 
     // Authentication
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+
+    CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,
 
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
 
