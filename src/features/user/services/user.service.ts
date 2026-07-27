@@ -1,11 +1,12 @@
 import {
-  SubscriptionPlan,
+  DEFAULT_SUBSCRIPTION,
+  DEFAULT_USER_CREDITS,
+  DEFAULT_USER_ROLE,
   UserRepository,
-  UserRole,
-  type CreateUserInput,
-  type UpdateUserInput,
   createUserSchema,
   updateUserSchema,
+  type CreateUserInput,
+  type UpdateUserInput,
 } from "@/features/user";
 
 export class UserService {
@@ -20,9 +21,11 @@ export class UserService {
 
     return UserRepository.create({
       ...input,
-      credits: 20,
-      role: UserRole.USER,
-      subscription: SubscriptionPlan.FREE,
+      credits: DEFAULT_USER_CREDITS,
+
+      role: DEFAULT_USER_ROLE,
+
+      subscription: DEFAULT_SUBSCRIPTION,
     });
   }
 
