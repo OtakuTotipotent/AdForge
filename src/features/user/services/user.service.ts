@@ -1,38 +1,35 @@
-import { SubscriptionPlan, UserRole } from "@/features/user";
-import { UserRepository } from "../repositories/user.repository";
-
-interface CreateUserInput {
-  clerkId: string;
-  email: string;
-  username: string;
-  imageUrl: string;
-}
+import {
+  SubscriptionPlan,
+  UserRepository,
+  UserRole,
+  type CreateUserInput,
+  type UpdateUserInput,
+  createUserSchema,
+  updateUserSchema,
+} from "@/features/user";
 
 export class UserService {
   static async createUser(data: CreateUserInput) {
-    const existingUser = await UserRepository.findByClerkId(data.clerkId);
+    const input = createUserSchema.parse(data);
+
+    const existingUser = await UserRepository.findByClerkId(input.clerkId);
 
     if (existingUser) {
       return existingUser;
     }
 
     return UserRepository.create({
-      ...data,
+      ...input,
       credits: 20,
       role: UserRole.USER,
       subscription: SubscriptionPlan.FREE,
     });
   }
 
-  static updateUser(
-    clerkId: string,
-    data: {
-      email?: string;
-      username?: string;
-      imageUrl?: string;
-    }
-  ) {
-    return UserRepository.updateByClerkId(clerkId, data);
+  static updateUser(clerkId: string, data: UpdateUserInput) {
+    const input = updateUserSchema.parse(data);
+
+    return UserRepository.updateByClerkId(clerkId, input);
   }
 
   static deleteUser(clerkId: string) {

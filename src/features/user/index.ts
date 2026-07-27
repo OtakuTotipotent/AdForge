@@ -7,3 +7,5 @@ export * from "./services/user.service";
 export * from "./types/role";
 
 export * from "./types/subscription";
+
+export * from "./validation";
