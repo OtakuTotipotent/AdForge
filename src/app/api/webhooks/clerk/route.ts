@@ -34,6 +34,9 @@ export async function POST(req: Request) {
       "svix-signature": svixSignature,
     });
 
+    console.log(typeof verified);
+    console.log(verified);
+
     evt = verified as WebhookEvent;
     console.log(evt.type);
 
@@ -44,54 +47,80 @@ export async function POST(req: Request) {
 
     // Events Handle
 
-    switch (evt.type) {
-      case "user.created": {
-        const email = evt.data.email_addresses[0]?.email_address;
+    console.log("Webhook type:", evt.type);
+    console.log("Webhook data:", evt.data);
 
-        if (!email) break;
+    // switch (evt.type) {
+    //   case "user.created": {
+    //     const email = evt.data.email_addresses[0]?.email_address;
 
-        await UserService.createUser({
-          clerkId: evt.data.id,
+    //     if (!email) break;
 
-          email,
+    //     // await UserService.createUser({
+    //     const user = await UserService.createUser({
+    //       clerkId: evt.data.id,
 
-          username: evt.data.username ?? evt.data.first_name ?? "user",
+    //       email,
 
-          imageUrl: evt.data.image_url,
-        });
+    //       username: evt.data.username ?? evt.data.first_name ?? "user",
 
-        break;
-      }
+    //       imageUrl: evt.data.image_url,
+    //     });
+    //     console.log(user);
 
-      case "user.updated": {
-        const email = evt.data.email_addresses[0]?.email_address;
+    //     break;
+    //   }
 
-        if (!email) break;
+    //   case "user.updated": {
+    //     const email = evt.data.email_addresses[0]?.email_address;
 
-        await UserService.updateUser(evt.data.id, {
-          email,
+    //     if (!email) break;
 
-          username: evt.data.username ?? evt.data.first_name ?? "user",
+    //     await UserService.updateUser(evt.data.id, {
+    //       email,
 
-          imageUrl: evt.data.image_url,
-        });
+    //       username: evt.data.username ?? evt.data.first_name ?? "user",
 
-        break;
-      }
+    //       imageUrl: evt.data.image_url,
+    //     });
 
-      case "user.deleted": {
-        if (!evt.data.id) break;
+    //     break;
+    //   }
 
-        await UserService.deleteUser(evt.data.id);
+    //   case "user.deleted": {
+    //     if (!evt.data.id) break;
 
-        break;
-      }
+    //     await UserService.deleteUser(evt.data.id);
 
-      default:
-        break;
+    //     break;
+    //   }
+
+    //   default:
+    //     break;
+    // }
+
+    console.log("Reached switch");
+
+    if (evt.type === "user.created") {
+      console.log("Inside user.created");
+
+      const email = evt.data.email_addresses[0]?.email_address;
+
+      console.log(email);
+
+      const user = await UserService.createUser({
+        clerkId: evt.data.id,
+        email,
+        username: evt.data.username ?? evt.data.first_name ?? "user",
+        imageUrl: evt.data.image_url,
+      });
+
+      console.log(user);
     }
-  } catch {
-    return new Response("Invalid webhook signature.", {
+  } catch (error) {
+    console.error(error);
+
+    return new Response("Webhook failed", {
       status: 400,
     });
   }
