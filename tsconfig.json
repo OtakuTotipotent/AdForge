@@ -17,6 +17,7 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+    // "baseUrl": ".", // option baseUrl is deprecated & will stop working in Typescript 7
     "plugins": [
       {
         "name": "next"
