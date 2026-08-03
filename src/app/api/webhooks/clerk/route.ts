@@ -34,7 +34,21 @@ export async function POST(req: Request) {
     });
   }
 
-  console.log(event);
+  const type = event.type as string;
+
+  switch (type) {
+    case "user.created":
+      break;
+
+    case "user.updated":
+      break;
+
+    case "user.deleted":
+      break;
+
+    default:
+      break;
+  }
 
   return Response.json({
     success: true,

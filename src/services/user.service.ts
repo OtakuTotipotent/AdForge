@@ -1,24 +1,26 @@
 import "server-only";
 
+import type { User } from "@/models/user.model";
 import { UserRepository } from "@/repositories/user.repository";
 
 export class UserService {
-  static async getByClerkId(clerkId: string) {
+  static getByClerkId(clerkId: string) {
     return UserRepository.findByClerkId(clerkId);
   }
 
-  static async create(data: Parameters<typeof UserRepository.create>[0]) {
+  static create(data: Partial<User>) {
     return UserRepository.create(data);
   }
 
-  static async update(
-    clerkId: string,
-    data: Parameters<typeof UserRepository.updateByClerkId>[1],
-  ) {
+  static update(clerkId: string, data: Partial<User>) {
     return UserRepository.updateByClerkId(clerkId, data);
   }
 
-  static async delete(clerkId: string) {
+  static upsert(clerkId: string, data: Partial<User>) {
+    return UserRepository.upsert(clerkId, data);
+  }
+
+  static delete(clerkId: string) {
     return UserRepository.deleteByClerkId(clerkId);
   }
 }

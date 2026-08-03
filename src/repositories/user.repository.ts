@@ -1,6 +1,7 @@
 import "server-only";
 
 import { UserModel } from "@/models/user.model";
+import type { User } from "@/models/user.model";
 
 export class UserRepository {
   static findByClerkId(clerkId: string) {
@@ -15,16 +16,21 @@ export class UserRepository {
     return UserModel.findOne({ email });
   }
 
-  static create(data: Partial<InstanceType<typeof UserModel>>) {
+  static create(data: Partial<User>) {
     return UserModel.create(data);
   }
 
-  static updateByClerkId(
-    clerkId: string,
-    data: Partial<InstanceType<typeof UserModel>>,
-  ) {
+  static updateByClerkId(clerkId: string, data: Partial<User>) {
     return UserModel.findOneAndUpdate({ clerkId }, data, {
       new: true,
+    });
+  }
+
+  static upsert(clerkId: string, data: Partial<User>) {
+    return UserModel.findOneAndUpdate({ clerkId }, data, {
+      upsert: true,
+      new: true,
+      setDefaultsOnInsert: true,
     });
   }
 
