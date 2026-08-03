@@ -1,7 +1,7 @@
 import "server-only";
 
 import { UserModel } from "@/models/user.model";
-import type { User } from "@/models/user.model";
+import type { UserDocument } from "@/models/user.model";
 
 export class UserRepository {
   static findByClerkId(clerkId: string) {
@@ -16,17 +16,17 @@ export class UserRepository {
     return UserModel.findOne({ email });
   }
 
-  static create(data: Partial<User>) {
+  static create(data: Partial<UserDocument>) {
     return UserModel.create(data);
   }
 
-  static updateByClerkId(clerkId: string, data: Partial<User>) {
+  static updateByClerkId(clerkId: string, data: Partial<UserDocument>) {
     return UserModel.findOneAndUpdate({ clerkId }, data, {
       new: true,
     });
   }
 
-  static upsert(clerkId: string, data: Partial<User>) {
+  static upsert(clerkId: string, data: Partial<UserDocument>) {
     return UserModel.findOneAndUpdate({ clerkId }, data, {
       upsert: true,
       new: true,

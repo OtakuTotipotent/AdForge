@@ -63,7 +63,7 @@ const userSchema = new Schema(
   },
 );
 
-export type User = InferSchemaType<typeof userSchema>;
+export type UserDocument = InferSchemaType<typeof userSchema>;
 
-export const UserModel: Model<User> =
-  models.User ?? model<User>("User", userSchema);
+export const UserModel: Model<UserDocument> =
+  models.User ?? model<UserDocument>("User", userSchema);

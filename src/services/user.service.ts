@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { User } from "@/models/user.model";
+import type { UserDocument } from "@/models/user.model";
 import { UserRepository } from "@/repositories/user.repository";
 
 export class UserService {
@@ -8,15 +8,15 @@ export class UserService {
     return UserRepository.findByClerkId(clerkId);
   }
 
-  static create(data: Partial<User>) {
+  static create(data: Partial<UserDocument>) {
     return UserRepository.create(data);
   }
 
-  static update(clerkId: string, data: Partial<User>) {
+  static update(clerkId: string, data: Partial<UserDocument>) {
     return UserRepository.updateByClerkId(clerkId, data);
   }
 
-  static upsert(clerkId: string, data: Partial<User>) {
+  static upsert(clerkId: string, data: Partial<UserDocument>) {
     return UserRepository.upsert(clerkId, data);
   }
 
