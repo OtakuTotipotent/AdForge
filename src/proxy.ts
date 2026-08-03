@@ -1,5 +1,10 @@
-import { NextResponse } from "next/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
-export function proxy() {
-  return NextResponse.next();
-}
+export default clerkMiddleware();
+
+export const config = {
+  matcher: [
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|json|xml)).*)",
+    "/(api|trpc)(.*)",
+  ],
+};
