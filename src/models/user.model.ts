@@ -1,5 +1,8 @@
 import { InferSchemaType, Model, Schema, model, models } from "mongoose";
 
+import { FREE_CREDITS } from "@/constants/credits";
+import { PLANS } from "@/constants/plans";
+
 const userSchema = new Schema(
   {
     clerkId: {
@@ -7,15 +10,16 @@ const userSchema = new Schema(
       required: true,
       unique: true,
       index: true,
+      trim: true,
     },
 
     email: {
       type: String,
       required: true,
-      lowercase: true,
-      trim: true,
       unique: true,
       index: true,
+      lowercase: true,
+      trim: true,
     },
 
     username: {
@@ -27,11 +31,13 @@ const userSchema = new Schema(
     firstName: {
       type: String,
       default: null,
+      trim: true,
     },
 
     lastName: {
       type: String,
       default: null,
+      trim: true,
     },
 
     imageUrl: {
@@ -41,13 +47,14 @@ const userSchema = new Schema(
 
     credits: {
       type: Number,
-      default: 20,
+      default: FREE_CREDITS,
       min: 0,
     },
 
     plan: {
       type: String,
-      default: "FREE",
+      enum: Object.values(PLANS),
+      default: PLANS.FREE,
     },
   },
   {
@@ -56,7 +63,7 @@ const userSchema = new Schema(
   },
 );
 
-export type UserDocument = InferSchemaType<typeof userSchema>;
+export type User = InferSchemaType<typeof userSchema>;
 
-export const UserModel: Model<UserDocument> =
-  models.User || model<UserDocument>("User", userSchema);
+export const UserModel: Model<User> =
+  models.User ?? model<User>("User", userSchema);
