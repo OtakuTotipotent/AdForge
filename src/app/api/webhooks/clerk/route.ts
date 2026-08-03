@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { Webhook } from "svix";
 
 import { env } from "@/config/env";
-import type { ClerkWebhookEvents } from "@/types/webhook";
+import type { ClerkWebhookEvent } from "@/types/webhook";
 import {
   handleUserCreated,
   handleUserDeleted,
@@ -26,14 +26,14 @@ export async function POST(req: Request) {
 
   const webhook = new Webhook(env.CLERK_WEBHOOK_SECRET);
 
-  let event: ClerkWebhookEvents;
+  let event: ClerkWebhookEvent;
 
   try {
     event = webhook.verify(payload, {
       "svix-id": svixId,
       "svix-timestamp": svixTimestamp,
       "svix-signature": svixSignature,
-    }) as ClerkWebhookEvents;
+    }) as ClerkWebhookEvent;
   } catch {
     return new Response("Invalid signature.", {
       status: 400,
