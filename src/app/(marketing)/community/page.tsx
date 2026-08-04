@@ -1,7 +1,9 @@
+import { PageContainer } from "@/components/common/page-container";
+
 export default function CommunityPage() {
   return (
-    <section className="py-16">
+    <PageContainer>
       <h1 className="text-4xl font-bold">Community</h1>
-    </section>
+    </PageContainer>
   );
 }
