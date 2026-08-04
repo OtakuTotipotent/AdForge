@@ -1,19 +1,13 @@
 "use client";
 
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-} from "@clerk/nextjs";
+import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui";
 
 export function UserNav() {
   return (
     <>
-      <SignedOut>
+      <Show when="signed-out">
         <div className="flex items-center gap-2">
           <SignInButton mode="modal">
             <Button variant="ghost">Sign In</Button>
@@ -23,17 +17,18 @@ export function UserNav() {
             <Button>Get Started</Button>
           </SignUpButton>
         </div>
-      </SignedOut>
+      </Show>
 
-      <SignedIn>
+      <Show when="signed-in">
         <UserButton
+          showName
           appearance={{
             elements: {
               avatarBox: "size-9",
             },
           }}
         />
-      </SignedIn>
+      </Show>
     </>
   );
 }
