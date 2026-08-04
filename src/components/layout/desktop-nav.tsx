@@ -3,15 +3,26 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { MARKETING_NAVIGATION } from "@/config/navigation";
+import {
+  MARKETING_NAVIGATION,
+  DASHBOARD_NAVIGATION,
+} from "@/config/navigation";
 import { cn } from "@/lib/utils";
+
+const dashboardPrefixes = ["/generate", "/collections"];
 
 export function DesktopNav() {
   const pathname = usePathname();
 
+  const navigation = dashboardPrefixes.some((route) =>
+    pathname.startsWith(route),
+  )
+    ? DASHBOARD_NAVIGATION
+    : MARKETING_NAVIGATION;
+
   return (
     <nav className="hidden items-center gap-6 md:flex">
-      {MARKETING_NAVIGATION.map((item) => (
+      {navigation.map((item) => (
         <Link
           key={item.href}
           href={item.href}
