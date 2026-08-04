@@ -1,13 +1,18 @@
 import { Container } from "./container";
 import { DesktopNav } from "./desktop-nav";
 import { Logo } from "./logo";
+import { UserNav } from "./user-nav";
 
 export function AppHeader() {
   return (
-    <header className="border-b">
+    <header className="sticky top-0 z-50 border-b bg-background">
       <Container className="flex h-16 items-center justify-between">
-        <Logo />
-        <DesktopNav />
+        <div className="flex items-center gap-10">
+          <Logo />
+          <DesktopNav />
+        </div>
+
+        <UserNav />
       </Container>
     </header>
   );
