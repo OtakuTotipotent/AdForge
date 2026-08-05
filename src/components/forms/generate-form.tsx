@@ -1,10 +1,15 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button, Input, Label, Select, Textarea } from "@/components/ui";
 import { generateSchema } from "@/validators/generation";
+
+import { uploadImage } from "@/actions/generate";
+import { ImageUpload } from "./image-upload";
 
 type FormValues = {
   projectName: string;
@@ -14,6 +19,10 @@ type FormValues = {
 };
 
 export function GenerateForm() {
+  const [productImage, setProductImage] = useState<File>();
+
+  const [modelImage, setModelImage] = useState<File>();
+
   const {
     register,
     handleSubmit,
@@ -29,7 +38,35 @@ export function GenerateForm() {
   });
 
   async function onSubmit(data: FormValues) {
-    console.log(data);
+    if (!productImage || !modelImage) {
+      toast.error("Upload both images.");
+
+      return;
+    }
+
+    const productData = new FormData();
+
+    productData.append("file", productImage);
+
+    const modelData = new FormData();
+
+    modelData.append("file", modelImage);
+
+    try {
+      const product = await uploadImage(productData);
+
+      const model = await uploadImage(modelData);
+
+      console.log(data);
+
+      console.log(product);
+
+      console.log(model);
+
+      toast.success("Images uploaded.");
+    } catch {
+      toast.error("Upload failed.");
+    }
   }
 
   return (
@@ -66,6 +103,12 @@ export function GenerateForm() {
 
           <option value="landscape">Landscape</option>
         </Select>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <ImageUpload title="Product Image" onFile={setProductImage} />
+
+        <ImageUpload title="Model Image" onFile={setModelImage} />
       </div>
 
       <Button type="submit" disabled={isSubmitting}>
