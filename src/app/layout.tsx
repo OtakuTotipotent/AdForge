@@ -1,6 +1,8 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { Providers } from "@/components/providers";
 
+import "@/app/globals.css";
+
 export { metadata } from "@/config/metadata";
 
 export default function RootLayout({
