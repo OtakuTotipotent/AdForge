@@ -2,10 +2,13 @@ import type { ButtonHTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils";
 
-type ButtonVariant = "default" | "outline" | "ghost";
+export type ButtonVariant = "default" | "outline" | "ghost" | "destructive";
+
+export type ButtonSize = "default" | "sm" | "lg" | "icon";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
+  size?: ButtonSize;
 }
 
 const variants: Record<ButtonVariant, string> = {
@@ -15,18 +18,32 @@ const variants: Record<ButtonVariant, string> = {
   outline: "border border-border bg-transparent hover:bg-accent",
 
   ghost: "hover:bg-accent",
+
+  destructive: "bg-red-600 text-white hover:bg-red-700",
+};
+
+const sizes: Record<ButtonSize, string> = {
+  default: "h-10 px-4",
+
+  sm: "h-9 px-3 text-xs",
+
+  lg: "h-11 px-8",
+
+  icon: "h-10 w-10 p-0",
 };
 
 export function Button({
   className,
   variant = "default",
+  size = "default",
   ...props
 }: ButtonProps) {
   return (
     <button
       className={cn(
-        "inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50",
         variants[variant],
+        sizes[size],
         className,
       )}
       {...props}

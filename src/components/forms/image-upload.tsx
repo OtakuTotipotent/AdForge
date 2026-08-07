@@ -1,54 +1,110 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useRef, useState } from "react";
+import { ImagePlus, Loader2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
-import { ImagePlus } from "lucide-react";
-import { useDropzone } from "react-dropzone";
+import { Button } from "@/components/ui";
+import { uploadImageClient } from "@/lib/cloudinary/upload-client";
+import { validateImage } from "@/lib/utils/file";
+import type { UploadedImage } from "@/types/image-upload";
 
-interface Props {
-  title: string;
-  onFile(file: File): void;
+interface ImageUploadProps {
+  value?: UploadedImage | null;
+  folder: string;
+  label: string;
+  onChange(value: UploadedImage | null): void;
 }
 
-export function ImageUpload({ title, onFile }: Props) {
-  const [preview, setPreview] = useState<string>();
+export function ImageUpload({
+  value,
+  folder,
+  label,
+  onChange,
+}: ImageUploadProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const onDrop = useCallback(
-    (accepted: File[]) => {
-      const file = accepted[0];
+  const [loading, setLoading] = useState(false);
 
-      if (!file) return;
+  async function handleSelect(file: File) {
+    const error = validateImage(file);
 
-      setPreview(URL.createObjectURL(file));
+    if (error) {
+      toast.error(error);
 
-      onFile(file);
-    },
-    [onFile],
-  );
+      return;
+    }
 
-  const { getRootProps, getInputProps } = useDropzone({
-    maxFiles: 1,
-    accept: {
-      "image/*": [],
-    },
-    onDrop,
-  });
+    try {
+      setLoading(true);
+
+      const image = await uploadImageClient({
+        file,
+        folder,
+      });
+
+      onChange(image);
+
+      toast.success("Image uploaded.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <div
-      {...getRootProps()}
-      className="relative flex h-56 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed"
-    >
-      <input {...getInputProps()} />
+    <div className="space-y-3">
+      <p className="text-sm font-medium">{label}</p>
 
-      {preview ? (
-        <Image fill alt={title} src={preview} className="object-cover" />
-      ) : (
-        <div className="text-center">
-          <ImagePlus className="mx-auto mb-3 size-10" />
+      <input
+        ref={inputRef}
+        hidden
+        type="file"
+        accept="image/*"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
 
-          <p>{title}</p>
+          if (file) {
+            void handleSelect(file);
+          }
+        }}
+      />
+
+      {!value && (
+        <Button
+          type="button"
+          variant="outline"
+          disabled={loading}
+          onClick={() => inputRef.current?.click()}
+          className="h-36 w-full border-dashed"
+        >
+          {loading ? (
+            <Loader2 className="size-5 animate-spin" />
+          ) : (
+            <ImagePlus className="size-6" />
+          )}
+        </Button>
+      )}
+
+      {value && (
+        <div className="relative overflow-hidden rounded-lg border">
+          <Image
+            src={value.secureUrl}
+            alt={label}
+            width={400}
+            height={400}
+            className="aspect-square w-full object-cover"
+          />
+
+          <Button
+            type="button"
+            size="icon"
+            variant="destructive"
+            className="absolute right-3 top-3"
+            onClick={() => onChange(null)}
+          >
+            <Trash2 className="size-4" />
+          </Button>
         </div>
       )}
     </div>
