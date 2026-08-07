@@ -1,53 +1,51 @@
 import "server-only";
 
-import { v2 as cloudinary } from "cloudinary";
+import { randomUUID } from "node:crypto";
 
-import { CLOUDINARY_FOLDERS } from "./folders";
+import type { UploadApiResponse } from "cloudinary";
 
-export interface UploadImageOptions {
-  file: Buffer;
-  filename: string;
-  folder?: string;
-}
+import { cloudinary } from "./client";
 
-export interface UploadedImage {
-  publicId: string;
-  secureUrl: string;
-  width: number;
-  height: number;
-  format: string;
-  bytes: number;
-}
+import type { CloudinaryUploadResult } from "@/types/cloudinary";
 
-export async function uploadImage({
-  file,
-  filename,
-  folder = CLOUDINARY_FOLDERS.GENERATED_IMAGES,
-}: UploadImageOptions): Promise<UploadedImage> {
-  return new Promise((resolve, reject) => {
-    cloudinary.uploader
-      .upload_stream(
-        {
-          folder,
-          resource_type: "image",
-          filename_override: filename,
-          unique_filename: true,
-        },
-        (error, result) => {
-          if (error || !result) {
-            return reject(error);
-          }
+export async function uploadImage(
+  file: Buffer,
+  folder: string,
+): Promise<CloudinaryUploadResult> {
+  const result = await new Promise<UploadApiResponse>((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: "image",
+        public_id: randomUUID(),
+        overwrite: false,
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
 
-          resolve({
-            publicId: result.public_id,
-            secureUrl: result.secure_url,
-            width: result.width,
-            height: result.height,
-            format: result.format,
-            bytes: result.bytes,
-          });
-        },
-      )
-      .end(file);
+          return;
+        }
+
+        if (!result) {
+          reject(new Error("Cloudinary returned no upload result."));
+
+          return;
+        }
+
+        resolve(result);
+      },
+    );
+
+    stream.end(file);
   });
+
+  return {
+    publicId: result.public_id,
+    secureUrl: result.secure_url,
+    width: result.width,
+    height: result.height,
+    format: result.format,
+    bytes: result.bytes,
+  };
 }
