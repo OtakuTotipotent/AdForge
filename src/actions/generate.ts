@@ -1,49 +1,41 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
+import { auth } from "@clerk/nextjs/server";
 
-import { v2 as cloudinary } from "cloudinary";
+import { GenerationService } from "@/services";
+import { getCurrentDbUser } from "@/lib/auth/current-db-user";
+import { deductCredits } from "@/lib/auth/credits";
+import {
+  generationSchema,
+  type GenerationInput,
+} from "@/validators/generation";
 
-import { env } from "@/config/env";
-import type { UploadedAsset } from "@/types/cloudinary";
+export async function generateAdvertisement(values: GenerationInput) {
+  const { userId } = await auth();
 
-cloudinary.config({
-  cloud_name: env.CLOUDINARY_CLOUD_NAME,
-  api_key: env.CLOUDINARY_API_KEY,
-  api_secret: env.CLOUDINARY_API_SECRET,
-});
-
-export async function uploadImage(formData: FormData): Promise<UploadedAsset> {
-  const file = formData.get("file");
-
-  if (!(file instanceof File)) {
-    throw new Error("Image is required.");
+  if (!userId) {
+    throw new Error("Unauthorized.");
   }
 
-  const bytes = await file.arrayBuffer();
+  const parsed = generationSchema.safeParse(values);
 
-  const buffer = Buffer.from(bytes);
+  if (!parsed.success) {
+    throw new Error("Invalid input.");
+  }
 
-  return new Promise((resolve, reject) => {
-    cloudinary.uploader
-      .upload_stream(
-        {
-          folder: "adforge/uploads",
-          public_id: randomUUID(),
-        },
-        (error, result) => {
-          if (error || !result) {
-            reject(error);
+  const user = await getCurrentDbUser();
 
-            return;
-          }
+  if (!user) {
+    throw new Error("User not found.");
+  }
 
-          resolve({
-            publicId: result.public_id,
-            secureUrl: result.secure_url,
-          });
-        },
-      )
-      .end(buffer);
-  });
+  if (user.credits <= 0) {
+    throw new Error("No credits remaining.");
+  }
+
+  const result = await GenerationService.generate(parsed.data);
+
+  await deductCredits(user.clerkId, 1);
+
+  return result;
 }

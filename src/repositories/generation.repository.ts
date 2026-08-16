@@ -1,5 +1,3 @@
-import "server-only";
-
 import { GenerationModel } from "@/models";
 
 export class GenerationRepository {
@@ -7,23 +5,19 @@ export class GenerationRepository {
     return GenerationModel.create(data);
   }
 
-  static findById(id: string) {
-    return GenerationModel.findById(id);
+  static findByUser(userId: string) {
+    return GenerationModel.find({ userId })
+      .sort({
+        createdAt: -1,
+      })
+      .lean();
   }
 
-  static findByUser(userId: string) {
-    return GenerationModel.find({ userId }).sort({
-      createdAt: -1,
-    });
+  static findById(id: string) {
+    return GenerationModel.findById(id).lean();
   }
 
   static delete(id: string) {
     return GenerationModel.findByIdAndDelete(id);
-  }
-
-  static update(id: string, data: object) {
-    return GenerationModel.findByIdAndUpdate(id, data, {
-      new: true,
-    });
   }
 }

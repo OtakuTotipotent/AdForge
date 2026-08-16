@@ -1,9 +1,29 @@
-import { GENERATION_COST } from "@/constants/credits";
+import "server-only";
 
-export function hasEnoughCredits(credits: number) {
-  return credits >= GENERATION_COST;
+import { UserModel } from "@/models";
+
+export async function deductCredits(clerkId: string, amount: number) {
+  await UserModel.updateOne(
+    {
+      clerkId,
+    },
+    {
+      $inc: {
+        credits: -amount,
+      },
+    },
+  );
 }
 
-export function remainingCredits(credits: number) {
-  return credits - GENERATION_COST;
+export async function addCredits(clerkId: string, amount: number) {
+  await UserModel.updateOne(
+    {
+      clerkId,
+    },
+    {
+      $inc: {
+        credits: amount,
+      },
+    },
+  );
 }

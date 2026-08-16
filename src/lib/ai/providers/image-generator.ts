@@ -1,12 +1,17 @@
 import "server-only";
 
+export interface UploadedImage {
+  publicId: string;
+  secureUrl: string;
+}
+
 export interface GenerateAdvertisementInput {
   projectName: string;
   productName: string;
   description: string;
   orientation: "portrait" | "landscape";
-  productImage: string;
-  modelImage: string;
+  productImage: UploadedImage;
+  modelImage?: UploadedImage;
 }
 
 export interface GeneratedAdvertisement {
