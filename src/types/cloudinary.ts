@@ -1,8 +1,1 @@
-export interface CloudinaryUploadResult {
-  publicId: string;
-  secureUrl: string;
-  width: number;
-  height: number;
-  format: string;
-  bytes: number;
-}
+export type { CloudinaryUploadResult } from "./image-upload";

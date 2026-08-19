@@ -1,4 +1,9 @@
-export interface UploadedImage {
+export interface CloudinaryUploadResult {
   publicId: string;
   secureUrl: string;
+  width: number;
+  height: number;
+  format: string;
+  bytes: number;
+  resourceType: "image" | "video" | "raw";
 }

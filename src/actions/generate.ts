@@ -2,9 +2,14 @@
 
 import { auth } from "@clerk/nextjs/server";
 
-import { GenerationService } from "@/services";
+import { GENERATION_COST } from "@/constants/credits";
+import {
+  addCredits,
+  deductCredits,
+  hasEnoughCredits,
+} from "@/lib/auth/credits";
 import { getCurrentDbUser } from "@/lib/auth/current-db-user";
-import { deductCredits } from "@/lib/auth/credits";
+import { GenerationService } from "@/services";
 import {
   generationSchema,
   type GenerationInput,
@@ -20,7 +25,7 @@ export async function generateAdvertisement(values: GenerationInput) {
   const parsed = generationSchema.safeParse(values);
 
   if (!parsed.success) {
-    throw new Error("Invalid input.");
+    throw new Error("Invalid generation input.");
   }
 
   const user = await getCurrentDbUser();
@@ -29,13 +34,49 @@ export async function generateAdvertisement(values: GenerationInput) {
     throw new Error("User not found.");
   }
 
-  if (user.credits <= 0) {
-    throw new Error("No credits remaining.");
+  if (!hasEnoughCredits(user.credits)) {
+    throw new Error("Insufficient credits.");
   }
 
-  const result = await GenerationService.generate(parsed.data);
+  const creditsDeducted = await deductCredits(user.clerkId, GENERATION_COST);
 
-  await deductCredits(user.clerkId, 1);
+  if (!creditsDeducted) {
+    throw new Error("Insufficient credits.");
+  }
 
-  return result;
+  try {
+    return await GenerationService.create({
+      userId: user._id,
+
+      projectName: parsed.data.projectName,
+      productName: parsed.data.productName,
+      description: parsed.data.description,
+
+      prompt: "",
+
+      orientation: parsed.data.orientation,
+
+      productImagePublicId: parsed.data.productImage.publicId,
+      productImageUrl: parsed.data.productImage.secureUrl,
+
+      modelImagePublicId: parsed.data.modelImage?.publicId ?? null,
+      modelImageUrl: parsed.data.modelImage?.secureUrl ?? null,
+
+      generatedImagePublicId: null,
+      generatedImageUrl: null,
+
+      generatedVideoPublicId: null,
+      generatedVideoUrl: null,
+
+      visibility: "private",
+      status: "pending",
+
+      errorMessage: null,
+      downloads: 0,
+    });
+  } catch (error) {
+    await addCredits(user.clerkId, GENERATION_COST);
+
+    throw error;
+  }
 }

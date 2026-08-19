@@ -1,13 +1,24 @@
-import "server-only";
-
-import { GoogleImageProvider } from "@/lib/ai";
-
-import type { GenerateAdvertisementInput } from "@/lib/ai";
+import { GenerationRepository } from "@/repositories";
+import type { GenerationCreationData, GenerationUpdateData } from "@/models";
 
 export class GenerationService {
-  private static provider = new GoogleImageProvider();
+  static create(data: GenerationCreationData) {
+    return GenerationRepository.create(data);
+  }
 
-  static async generate(input: GenerateAdvertisementInput) {
-    return this.provider.generate(input);
+  static findUserGenerations(userId: string) {
+    return GenerationRepository.findByUser(userId);
+  }
+
+  static findById(id: string) {
+    return GenerationRepository.findById(id);
+  }
+
+  static update(id: string, data: GenerationUpdateData) {
+    return GenerationRepository.update(id, data);
+  }
+
+  static delete(id: string) {
+    return GenerationRepository.delete(id);
   }
 }
