@@ -27,8 +27,8 @@ export async function deductCredits(
 export async function addCredits(
   clerkId: string,
   amount: number,
-): Promise<boolean> {
-  const result = await UserModel.updateOne(
+): Promise<void> {
+  await UserModel.updateOne(
     {
       clerkId,
     },
@@ -38,8 +38,6 @@ export async function addCredits(
       },
     },
   );
-
-  return result.modifiedCount === 1;
 }
 
 export function hasEnoughCredits(credits: number): boolean {
@@ -47,5 +45,5 @@ export function hasEnoughCredits(credits: number): boolean {
 }
 
 export function remainingCredits(credits: number): number {
-  return credits - GENERATION_COST;
+  return Math.max(0, credits - GENERATION_COST);
 }

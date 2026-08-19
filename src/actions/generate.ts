@@ -45,7 +45,7 @@ export async function generateAdvertisement(values: GenerationInput) {
   }
 
   try {
-    return await GenerationService.create({
+    return await GenerationService.generate({
       userId: user._id,
 
       projectName: parsed.data.projectName,
@@ -60,6 +60,7 @@ export async function generateAdvertisement(values: GenerationInput) {
       productImageUrl: parsed.data.productImage.secureUrl,
 
       modelImagePublicId: parsed.data.modelImage?.publicId ?? null,
+
       modelImageUrl: parsed.data.modelImage?.secureUrl ?? null,
 
       generatedImagePublicId: null,

@@ -15,9 +15,10 @@ export interface GenerateAdvertisementInput {
 }
 
 export interface GeneratedAdvertisement {
-  imageUrl: string;
+  imageBuffer: Buffer;
+  mimeType: string;
   prompt: string;
-  provider: string;
+  provider: "google";
 }
 
 export interface ImageGeneratorProvider {

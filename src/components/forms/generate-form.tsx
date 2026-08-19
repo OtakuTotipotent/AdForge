@@ -1,118 +1,185 @@
 "use client";
 
 import { useState } from "react";
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { Loader2, Sparkles } from "lucide-react";
 
 import { Button, Input, Label, Select, Textarea } from "@/components/ui";
-import { generateSchema } from "@/validators/generation";
+import { CLOUDINARY_FOLDERS } from "@/constants/cloudinary";
+import { generateAdvertisement } from "@/actions/generate";
+import {
+  generationSchema,
+  type GenerationInput,
+} from "@/validators/generation";
 
-import { uploadImage } from "@/actions/generate";
 import { ImageUpload } from "./image-upload";
 
-type FormValues = {
-  projectName: string;
-  productName: string;
-  prompt: string;
-  orientation: "portrait" | "landscape";
+const DEFAULT_VALUES: Partial<GenerationInput> = {
+  projectName: "",
+  productName: "",
+  description: "",
+  orientation: "portrait",
 };
 
 export function GenerateForm() {
-  const [productImage, setProductImage] = useState<File>();
+  const [productImage, setProductImage] = useState<
+    GenerationInput["productImage"] | null
+  >(null);
 
-  const [modelImage, setModelImage] = useState<File>();
+  const [modelImage, setModelImage] = useState<
+    GenerationInput["modelImage"] | null
+  >(null);
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>({
-    resolver: zodResolver(generateSchema),
-    defaultValues: {
-      projectName: "",
-      productName: "",
-      prompt: "",
-      orientation: "portrait",
-    },
+  } = useForm<GenerationInput>({
+    resolver: zodResolver(generationSchema),
+    defaultValues: DEFAULT_VALUES,
   });
 
-  async function onSubmit(data: FormValues) {
-    if (!productImage || !modelImage) {
-      toast.error("Upload both images.");
+  async function onSubmit(values: GenerationInput) {
+    if (!productImage) {
+      toast.error("Please upload a product image.");
 
       return;
     }
 
-    const productData = new FormData();
-
-    productData.append("file", productImage);
-
-    const modelData = new FormData();
-
-    modelData.append("file", modelImage);
-
     try {
-      const product = await uploadImage(productData);
+      const result = await generateAdvertisement({
+        ...values,
+        productImage,
+        modelImage: modelImage ?? undefined,
+      });
 
-      const model = await uploadImage(modelData);
+      console.log("Generation created:", result);
 
-      console.log(data);
+      toast.success("Advertisement generation started.");
 
-      console.log(product);
+      reset(DEFAULT_VALUES);
 
-      console.log(model);
+      setProductImage(null);
+      setModelImage(null);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Something went wrong while starting generation.";
 
-      toast.success("Images uploaded.");
-    } catch {
-      toast.error("Upload failed.");
+      toast.error(message);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="space-y-2">
-        <Label>Project Name</Label>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="projectName">Project Name</Label>
 
-        <Input {...register("projectName")} />
+          <Input
+            id="projectName"
+            placeholder="Summer campaign"
+            {...register("projectName")}
+          />
 
-        <p className="text-sm text-red-500">{errors.projectName?.message}</p>
+          {errors.projectName?.message && (
+            <p className="text-sm text-red-500">{errors.projectName.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="productName">Product Name</Label>
+
+          <Input
+            id="productName"
+            placeholder="Premium skincare serum"
+            {...register("productName")}
+          />
+
+          {errors.productName?.message && (
+            <p className="text-sm text-red-500">{errors.productName.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="description">Product Description</Label>
+
+          <Textarea
+            id="description"
+            placeholder="Describe the product, its benefits, target audience, and the desired advertising concept..."
+            className="min-h-32 resize-y"
+            {...register("description")}
+          />
+
+          {errors.description?.message && (
+            <p className="text-sm text-red-500">{errors.description.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="orientation">Orientation</Label>
+
+          <Select id="orientation" {...register("orientation")}>
+            <option value="portrait">Portrait</option>
+            <option value="landscape">Landscape</option>
+          </Select>
+
+          {errors.orientation?.message && (
+            <p className="text-sm text-red-500">{errors.orientation.message}</p>
+          )}
+        </div>
       </div>
 
-      <div className="space-y-2">
-        <Label>Product Name</Label>
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold">Reference Images</h2>
 
-        <Input {...register("productName")} />
+          <p className="text-sm text-muted-foreground">
+            Upload the product image and optionally provide a model reference.
+          </p>
+        </div>
 
-        <p className="text-sm text-red-500">{errors.productName?.message}</p>
+        <div className="grid gap-6 md:grid-cols-2">
+          <ImageUpload
+            label="Product Image"
+            folder={CLOUDINARY_FOLDERS.PRODUCTS}
+            value={productImage}
+            onChange={setProductImage}
+          />
+
+          <ImageUpload
+            label="Model Image"
+            folder={CLOUDINARY_FOLDERS.MODELS}
+            value={modelImage}
+            onChange={setModelImage}
+          />
+        </div>
+
+        {errors.productImage?.message && (
+          <p className="text-sm text-red-500">{errors.productImage.message}</p>
+        )}
       </div>
 
-      <div className="space-y-2">
-        <Label>Description</Label>
-
-        <Textarea {...register("prompt")} />
-
-        <p className="text-sm text-red-500">{errors.prompt?.message}</p>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Orientation</Label>
-
-        <Select {...register("orientation")}>
-          <option value="portrait">Portrait</option>
-
-          <option value="landscape">Landscape</option>
-        </Select>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <ImageUpload title="Product Image" onFile={setProductImage} />
-
-        <ImageUpload title="Model Image" onFile={setModelImage} />
-      </div>
-
-      <Button type="submit" disabled={isSubmitting}>
-        Generate Advertisement
+      <Button
+        type="submit"
+        disabled={isSubmitting || !productImage}
+        className="w-full"
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 size-4 animate-spin" />
+            Starting Generation...
+          </>
+        ) : (
+          <>
+            <Sparkles className="mr-2 size-4" />
+            Generate Advertisement
+          </>
+        )}
       </Button>
     </form>
   );

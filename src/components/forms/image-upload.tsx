@@ -24,7 +24,6 @@ export function ImageUpload({
   onChange,
 }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-
   const [loading, setLoading] = useState(false);
 
   async function handleSelect(file: File) {
@@ -32,7 +31,6 @@ export function ImageUpload({
 
     if (error) {
       toast.error(error);
-
       return;
     }
 
@@ -46,9 +44,18 @@ export function ImageUpload({
 
       onChange(image);
 
-      toast.success("Image uploaded.");
+      toast.success(`${label} uploaded.`);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Image upload failed.";
+
+      toast.error(message);
     } finally {
       setLoading(false);
+
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
     }
   }
 
@@ -76,13 +83,19 @@ export function ImageUpload({
           variant="outline"
           disabled={loading}
           onClick={() => inputRef.current?.click()}
-          className="h-36 w-full border-dashed"
+          className="h-40 w-full border-dashed"
         >
-          {loading ? (
-            <Loader2 className="size-5 animate-spin" />
-          ) : (
-            <ImagePlus className="size-6" />
-          )}
+          <span className="flex flex-col items-center gap-3">
+            {loading ? (
+              <Loader2 className="size-6 animate-spin" />
+            ) : (
+              <ImagePlus className="size-6" />
+            )}
+
+            <span className="text-sm text-muted-foreground">
+              {loading ? "Uploading..." : "Click to upload"}
+            </span>
+          </span>
         </Button>
       )}
 
@@ -91,8 +104,8 @@ export function ImageUpload({
           <Image
             src={value.secureUrl}
             alt={label}
-            width={400}
-            height={400}
+            width={800}
+            height={800}
             className="aspect-square w-full object-cover"
           />
 
@@ -102,6 +115,7 @@ export function ImageUpload({
             variant="destructive"
             className="absolute right-3 top-3"
             onClick={() => onChange(null)}
+            aria-label={`Remove ${label}`}
           >
             <Trash2 className="size-4" />
           </Button>
