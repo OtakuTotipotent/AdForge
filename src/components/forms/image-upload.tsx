@@ -44,18 +44,13 @@ export function ImageUpload({
 
       onChange(image);
 
-      toast.success(`${label} uploaded.`);
+      toast.success("Image uploaded.");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Image upload failed.";
-
-      toast.error(message);
+      toast.error(
+        error instanceof Error ? error.message : "Image upload failed.",
+      );
     } finally {
       setLoading(false);
-
-      if (inputRef.current) {
-        inputRef.current.value = "";
-      }
     }
   }
 

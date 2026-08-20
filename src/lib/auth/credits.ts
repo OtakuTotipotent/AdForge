@@ -1,7 +1,7 @@
 import "server-only";
 
-import { GENERATION_COST } from "@/constants/credits";
 import { UserModel } from "@/models";
+import { GENERATION_COST } from "@/constants/credits";
 
 export async function deductCredits(
   clerkId: string,
@@ -10,9 +10,7 @@ export async function deductCredits(
   const result = await UserModel.updateOne(
     {
       clerkId,
-      credits: {
-        $gte: amount,
-      },
+      credits: { $gte: amount },
     },
     {
       $inc: {
