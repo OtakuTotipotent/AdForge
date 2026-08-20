@@ -1,3 +1,5 @@
+import "server-only";
+
 import { GenerationRepository } from "@/repositories";
 import type { GenerationCreationData, GenerationUpdateData } from "@/models";
 
@@ -28,14 +30,19 @@ export class GenerationService {
     return GenerationRepository.delete(id);
   }
 
-  static async generate(data: GenerationCreationData) {
-    const generation = await GenerationRepository.create(data);
+  static async generate(generationId: string) {
+    const generation = await GenerationRepository.findById(generationId);
+
+    if (!generation) {
+      throw new Error("Generation not found.");
+    }
+
+    await GenerationRepository.update(generationId, {
+      status: "processing",
+      errorMessage: null,
+    });
 
     try {
-      await GenerationRepository.update(generation._id.toString(), {
-        status: "processing",
-      });
-
       const input: GenerateAdvertisementInput = {
         projectName: generation.projectName,
         productName: generation.productName,
@@ -62,16 +69,15 @@ export class GenerationService {
         generated.mimeType,
       );
 
-      const completed = await GenerationRepository.update(
-        generation._id.toString(),
-        {
-          prompt: generated.prompt,
-          generatedImagePublicId: uploaded.publicId,
-          generatedImageUrl: uploaded.secureUrl,
-          status: "completed",
-          errorMessage: null,
-        },
-      );
+      const completed = await GenerationRepository.update(generationId, {
+        prompt: generated.prompt,
+
+        generatedImagePublicId: uploaded.publicId,
+        generatedImageUrl: uploaded.secureUrl,
+
+        status: "completed",
+        errorMessage: null,
+      });
 
       if (!completed) {
         throw new Error("Unable to update completed generation.");
@@ -80,9 +86,11 @@ export class GenerationService {
       return completed;
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Generation failed.";
+        error instanceof Error
+          ? error.message
+          : "Advertisement generation failed.";
 
-      await GenerationRepository.update(generation._id.toString(), {
+      await GenerationRepository.update(generationId, {
         status: "failed",
         errorMessage,
       });

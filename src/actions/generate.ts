@@ -45,7 +45,7 @@ export async function generateAdvertisement(values: GenerationInput) {
   }
 
   try {
-    return await GenerationService.generate({
+    const generation = await GenerationService.create({
       userId: user._id,
 
       projectName: parsed.data.projectName,
@@ -60,7 +60,6 @@ export async function generateAdvertisement(values: GenerationInput) {
       productImageUrl: parsed.data.productImage.secureUrl,
 
       modelImagePublicId: parsed.data.modelImage?.publicId ?? null,
-
       modelImageUrl: parsed.data.modelImage?.secureUrl ?? null,
 
       generatedImagePublicId: null,
@@ -75,6 +74,14 @@ export async function generateAdvertisement(values: GenerationInput) {
       errorMessage: null,
       downloads: 0,
     });
+
+    const completed = await GenerationService.generate(generation._id.toString());
+
+    return {
+      id: completed._id.toString(),
+      generatedImageUrl: completed.generatedImageUrl,
+      status: completed.status,
+    };
   } catch (error) {
     await addCredits(user.clerkId, GENERATION_COST);
 

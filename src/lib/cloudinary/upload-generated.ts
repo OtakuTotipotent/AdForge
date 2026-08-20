@@ -2,7 +2,6 @@ import "server-only";
 
 import { v2 as cloudinary } from "cloudinary";
 import { nanoid } from "nanoid";
-
 import { env } from "@/config/env";
 import { CLOUDINARY_FOLDERS } from "@/constants/cloudinary";
 

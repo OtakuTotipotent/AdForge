@@ -1,11 +1,8 @@
 import "server-only";
 
 import { randomUUID } from "node:crypto";
-
 import type { UploadApiResponse } from "cloudinary";
-
 import { cloudinary } from "./client";
-
 import type { CloudinaryUploadResult } from "@/types/cloudinary";
 
 export async function uploadImage(
@@ -47,5 +44,6 @@ export async function uploadImage(
     height: result.height,
     format: result.format,
     bytes: result.bytes,
+    resourceType: "image",
   };
 }

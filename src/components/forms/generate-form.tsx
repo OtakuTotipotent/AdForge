@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,7 +8,18 @@ import { toast } from "sonner";
 
 import { generateAdvertisement } from "@/actions/generate";
 import { CLOUDINARY_FOLDERS } from "@/constants/cloudinary";
-import { Button, Input, Label, Select, Textarea } from "@/components/ui";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  Select,
+  Textarea,
+} from "@/components/ui";
 import type { UploadedImage } from "@/types/image-upload";
 import {
   generationSchema,
@@ -19,6 +31,10 @@ import { ImageUpload } from "./image-upload";
 export function GenerateForm() {
   const [productImage, setProductImage] = useState<UploadedImage | null>(null);
   const [modelImage, setModelImage] = useState<UploadedImage | null>(null);
+  const [result, setResult] = useState<{
+    id: string;
+    generatedImageUrl: string | null;
+  } | null>(null);
 
   const {
     register,
@@ -41,13 +57,19 @@ export function GenerateForm() {
     }
 
     try {
-      await generateAdvertisement({
+      setResult(null);
+
+      const generated = await generateAdvertisement({
         ...data,
         productImage,
         modelImage: modelImage ?? undefined,
       });
 
-      toast.success("Advertisement generation started.");
+      setResult({
+        id: generated.id,
+        generatedImageUrl: generated.generatedImageUrl ?? null,
+      });
+      toast.success("Advertisement generated successfully.");
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -121,6 +143,33 @@ export function GenerateForm() {
       <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Generating..." : "Generate Advertisement"}
       </Button>
+
+      {result && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Generated Advertisement</CardTitle>
+            <CardDescription>
+              Your advertisement is ready and saved to Collections.
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            {result.generatedImageUrl ? (
+              <Image
+                src={result.generatedImageUrl}
+                alt="Generated advertisement"
+                width={1200}
+                height={1200}
+                className="w-full rounded-lg object-cover"
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Generation completed, but no image URL was returned.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </form>
   );
 }

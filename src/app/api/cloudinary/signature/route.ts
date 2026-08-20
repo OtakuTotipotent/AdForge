@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { createUploadSignature } from "@/lib/cloudinary";
+import { createUploadSignature } from "@/lib/cloudinary/signature";
 import { protect } from "@/lib/auth/protect";
 import { cloudinarySignatureSchema } from "@/schemas/cloudinary.schema";
 

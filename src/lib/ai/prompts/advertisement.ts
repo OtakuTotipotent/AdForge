@@ -3,39 +3,33 @@ import type { GenerateAdvertisementInput } from "../providers/image-generator";
 export function buildAdvertisementPrompt(
   input: GenerateAdvertisementInput,
 ): string {
-  const aspectRatio = input.orientation === "portrait" ? "9:16" : "16:9";
-
   return `
-Create a premium commercial advertisement for the provided product image.
+Create a premium commercial advertisement for the following product.
 
-PROJECT:
+Project:
 ${input.projectName}
 
-PRODUCT:
+Product:
 ${input.productName}
 
-DESCRIPTION:
+Description:
 ${input.description}
 
-CREATIVE DIRECTION:
-- Create a polished commercial advertisement suitable for a modern SaaS advertising platform.
-- Preserve the identity, shape, proportions, colors, packaging, branding, and important visual characteristics of the product.
-- Do not redesign or replace the product.
-- Integrate the product naturally into a premium advertising scene.
-- Use realistic professional advertising photography.
-- Use cinematic studio lighting.
-- Use realistic shadows and reflections.
-- Use premium composition and visual hierarchy.
-- Keep the result commercially polished and visually convincing.
-- If a model image is provided, preserve the person's identity and realistic appearance.
-- Do not add watermarks.
-- Do not add unnecessary text.
-- Do not create fake logos.
-- Do not distort the product.
+Requirements:
 
-OUTPUT:
-- Aspect ratio: ${aspectRatio}
-- High visual quality.
-- Production-ready advertising composition.
+- Preserve the product's identity, shape, proportions, packaging, and visual characteristics.
+- Do not redesign or replace the product.
+- If a model image is provided, preserve the model's realistic appearance.
+- Create a polished commercial advertising composition.
+- Use professional studio-quality lighting.
+- Use realistic materials, shadows, reflections, and depth.
+- Premium advertising photography.
+- Strong visual hierarchy.
+- Clean and professional composition.
+- No watermark.
+- No unnecessary text.
+- No distorted objects.
+- No malformed hands, faces, products, or packaging.
+- Aspect ratio: ${input.orientation}.
 `;
 }
