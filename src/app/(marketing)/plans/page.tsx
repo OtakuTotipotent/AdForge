@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 
 import { PageContainer } from "@/components/common/page-container";
 import {
@@ -12,6 +13,12 @@ import {
 import { FREE_CREDITS, GENERATION_COST } from "@/constants/credits";
 import { PLANS } from "@/constants/plans";
 import { ROUTES } from "@/constants/routes";
+
+export const metadata: Metadata = {
+  title: "Plans",
+  description:
+    "Learn how AdForge AI credits work and what is currently available.",
+};
 
 export default function PlansPage() {
   const includedGenerations = FREE_CREDITS / GENERATION_COST;

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import {
   ArrowRight,
   ImagePlus,
@@ -9,6 +10,12 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import { ROUTES } from "@/constants/routes";
+
+export const metadata: Metadata = {
+  title: "Create advertisements with AI",
+  description:
+    "Create polished advertisement images from product details, product imagery, and optional model imagery.",
+};
 
 export default function HomePage() {
   const steps = [

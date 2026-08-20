@@ -1,10 +1,17 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 
 import { AdvertisementCard } from "@/components/cards/advertisement-card";
 import { PageContainer } from "@/components/common/page-container";
 import { Card, CardContent } from "@/components/ui";
 import { ROUTES } from "@/constants/routes";
 import { GenerationService } from "@/services";
+
+export const metadata: Metadata = {
+  title: "Community",
+  description:
+    "Explore completed advertisements that creators have chosen to share publicly.",
+};
 
 export const dynamic = "force-dynamic";
 

@@ -29,3 +29,8 @@ export const DASHBOARD_NAVIGATION = [
     href: ROUTES.COLLECTIONS,
   },
 ] as const;
+
+export const DASHBOARD_ROUTE_PREFIXES = [
+  ROUTES.GENERATE,
+  ROUTES.COLLECTIONS,
+] as const;

@@ -1,9 +1,16 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Images, ScanSearch, Sparkles, WandSparkles } from "lucide-react";
 
 import { PageContainer } from "@/components/common/page-container";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import { ROUTES } from "@/constants/routes";
+
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "Learn how AdForge AI turns product information and reference imagery into advertising concepts.",
+};
 
 export default function AboutPage() {
   const workflow = [

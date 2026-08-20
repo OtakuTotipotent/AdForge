@@ -4,15 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import {
-  MARKETING_NAVIGATION,
   DASHBOARD_NAVIGATION,
   DASHBOARD_ROUTE_PREFIXES,
+  MARKETING_NAVIGATION,
 } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 
-export function DesktopNav() {
+export function MobileNav() {
   const pathname = usePathname();
-
   const navigation = DASHBOARD_ROUTE_PREFIXES.some((route) =>
     pathname.startsWith(route),
   )
@@ -20,16 +19,19 @@ export function DesktopNav() {
     : MARKETING_NAVIGATION;
 
   return (
-    <nav className="hidden items-center gap-6 md:flex">
+    <nav
+      aria-label="Primary navigation"
+      className="flex gap-1 overflow-x-auto py-2 [scrollbar-width:none]"
+    >
       {navigation.map((item) => (
         <Link
           key={item.href}
           href={item.href}
           aria-current={pathname === item.href ? "page" : undefined}
           className={cn(
-            "rounded-sm text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground",
+            "shrink-0 rounded-md px-3 py-2 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
             pathname === item.href
-              ? "font-semibold"
+              ? "bg-accent font-semibold"
               : "text-muted-foreground hover:text-foreground",
           )}
         >

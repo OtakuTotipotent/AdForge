@@ -4,25 +4,29 @@ import { CreditsBadge } from "./credits-badge";
 import { Container } from "./container";
 import { DesktopNav } from "./desktop-nav";
 import { Logo } from "./logo";
+import { MobileNav } from "./mobile-nav";
 import { UserNav } from "./user-nav";
 
 export function AppHeader() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background">
-      <Container className="flex h-16 items-center justify-between">
+      <Container className="flex h-16 items-center justify-between gap-3">
         <div className="flex items-center gap-10">
           <Logo />
 
           <DesktopNav />
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
           <Show when="signed-in">
             <CreditsBadge />
           </Show>
 
           <UserNav />
         </div>
+      </Container>
+      <Container className="border-t md:hidden">
+        <MobileNav />
       </Container>
     </header>
   );
