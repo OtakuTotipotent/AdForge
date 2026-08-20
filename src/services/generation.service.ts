@@ -8,6 +8,7 @@ import { connectToDatabase } from "@/lib/db";
 import { GoogleImageProvider } from "@/lib/ai/providers/google-image";
 import type { GenerateAdvertisementInput } from "@/lib/ai/providers/image-generator";
 import { uploadGeneratedImage } from "@/lib/cloudinary/upload-generated";
+import { deleteImage } from "@/lib/cloudinary/delete";
 
 const imageProvider = new GoogleImageProvider();
 
@@ -30,12 +31,32 @@ export class GenerationService {
     return GenerationRepository.findById(id);
   }
 
+  static findUserGeneration(id: string, userId: string) {
+    return GenerationRepository.findByUserAndId(id, userId);
+  }
+
   static update(id: string, data: GenerationUpdateData) {
     return GenerationRepository.update(id, data);
   }
 
   static delete(id: string) {
     return GenerationRepository.delete(id);
+  }
+
+  static async deleteUserGeneration(id: string, userId: string) {
+    const generation = await GenerationRepository.findByUserAndId(id, userId);
+
+    if (!generation) {
+      return false;
+    }
+
+    if (generation.generatedImagePublicId) {
+      await deleteImage(generation.generatedImagePublicId);
+    }
+
+    await GenerationRepository.delete(id);
+
+    return true;
   }
 
   static async generate(generationId: string) {

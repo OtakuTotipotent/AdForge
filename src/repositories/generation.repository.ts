@@ -38,6 +38,17 @@ export class GenerationRepository {
     return GenerationModel.findById(id).lean();
   }
 
+  static findByUserAndId(id: string, userId: string) {
+    if (!Types.ObjectId.isValid(id) || !Types.ObjectId.isValid(userId)) {
+      return null;
+    }
+
+    return GenerationModel.findOne({
+      _id: new Types.ObjectId(id),
+      userId: new Types.ObjectId(userId),
+    }).lean();
+  }
+
   static update(id: string, data: GenerationUpdateData) {
     return GenerationModel.findByIdAndUpdate(
       id,

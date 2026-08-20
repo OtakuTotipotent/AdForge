@@ -1,15 +1,15 @@
 import { PageContainer } from "@/components/common/page-container";
-import { Card, CardContent } from "@/components/ui";
+import { Card } from "@/components/ui";
 
 export default function CollectionsLoading() {
   return (
     <PageContainer>
-      <h1 className="text-4xl font-bold">Collections</h1>
-      <Card className="mt-8">
-        <CardContent className="py-10 text-sm text-muted-foreground">
-          Loading your advertisements...
-        </CardContent>
-      </Card>
+      <div className="h-10 w-48 animate-pulse rounded bg-muted" />
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 6 }, (_, index) => (
+          <Card key={index} className="h-80 animate-pulse bg-muted" />
+        ))}
+      </div>
     </PageContainer>
   );
 }
