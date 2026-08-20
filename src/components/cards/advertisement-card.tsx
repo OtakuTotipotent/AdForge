@@ -26,8 +26,8 @@ export function AdvertisementCard({
         height={orientation === "portrait" ? 1600 : 675}
         className={
           orientation === "portrait"
-            ? "aspect-[9/16] w-full object-cover"
-            : "aspect-[16/9] w-full object-cover"
+            ? "aspect-9/16 w-full object-cover"
+            : "aspect-video w-full object-cover"
         }
       />
 
