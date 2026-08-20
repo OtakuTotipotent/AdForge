@@ -3,6 +3,8 @@ import "server-only";
 import { GenerationRepository } from "@/repositories";
 import type { GenerationCreationData, GenerationUpdateData } from "@/models";
 
+import { connectToDatabase } from "@/lib/db";
+
 import { GoogleImageProvider } from "@/lib/ai/providers/google-image";
 import type { GenerateAdvertisementInput } from "@/lib/ai/providers/image-generator";
 import { uploadGeneratedImage } from "@/lib/cloudinary/upload-generated";
@@ -16,6 +18,12 @@ export class GenerationService {
 
   static findUserGenerations(userId: string) {
     return GenerationRepository.findByUser(userId);
+  }
+
+  static async findPublicGenerations(limit = 24) {
+    await connectToDatabase();
+
+    return GenerationRepository.findPublic(limit);
   }
 
   static findById(id: string) {

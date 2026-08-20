@@ -21,6 +21,19 @@ export class GenerationRepository {
       .lean();
   }
 
+  static findPublic(limit: number) {
+    return GenerationModel.find({
+      visibility: "public",
+      status: "completed",
+      generatedImageUrl: { $ne: null },
+    })
+      .sort({
+        createdAt: -1,
+      })
+      .limit(limit)
+      .lean();
+  }
+
   static findById(id: string) {
     return GenerationModel.findById(id).lean();
   }
