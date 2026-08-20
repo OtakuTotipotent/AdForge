@@ -4,7 +4,7 @@ export const siteConfig = {
   name: "AdForge AI",
 
   description:
-    "Generate AI-powered advertisements, marketing videos, and promotional images.",
+    "Create AI-powered advertisements from product and model images.",
 
   url: env.NEXT_PUBLIC_APP_URL,
 

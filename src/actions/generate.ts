@@ -1,49 +1,90 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
+import { auth } from "@clerk/nextjs/server";
 
-import { v2 as cloudinary } from "cloudinary";
+import { GENERATION_COST } from "@/constants/credits";
+import {
+  addCredits,
+  deductCredits,
+  hasEnoughCredits,
+} from "@/lib/auth/credits";
+import { getCurrentDbUser } from "@/lib/auth/current-db-user";
+import { GenerationService } from "@/services";
+import {
+  generationSchema,
+  type GenerationInput,
+} from "@/validators/generation";
 
-import { env } from "@/config/env";
-import type { UploadedAsset } from "@/types/cloudinary";
+export async function generateAdvertisement(values: GenerationInput) {
+  const { userId } = await auth();
 
-cloudinary.config({
-  cloud_name: env.CLOUDINARY_CLOUD_NAME,
-  api_key: env.CLOUDINARY_API_KEY,
-  api_secret: env.CLOUDINARY_API_SECRET,
-});
-
-export async function uploadImage(formData: FormData): Promise<UploadedAsset> {
-  const file = formData.get("file");
-
-  if (!(file instanceof File)) {
-    throw new Error("Image is required.");
+  if (!userId) {
+    throw new Error("Unauthorized.");
   }
 
-  const bytes = await file.arrayBuffer();
+  const parsed = generationSchema.safeParse(values);
 
-  const buffer = Buffer.from(bytes);
+  if (!parsed.success) {
+    throw new Error("Invalid generation input.");
+  }
 
-  return new Promise((resolve, reject) => {
-    cloudinary.uploader
-      .upload_stream(
-        {
-          folder: "adforge/uploads",
-          public_id: randomUUID(),
-        },
-        (error, result) => {
-          if (error || !result) {
-            reject(error);
+  const user = await getCurrentDbUser();
 
-            return;
-          }
+  if (!user) {
+    throw new Error("User not found.");
+  }
 
-          resolve({
-            publicId: result.public_id,
-            secureUrl: result.secure_url,
-          });
-        },
-      )
-      .end(buffer);
-  });
+  if (!hasEnoughCredits(user.credits)) {
+    throw new Error("Insufficient credits.");
+  }
+
+  const creditsDeducted = await deductCredits(user.clerkId, GENERATION_COST);
+
+  if (!creditsDeducted) {
+    throw new Error("Insufficient credits.");
+  }
+
+  try {
+    const generation = await GenerationService.create({
+      userId: user._id,
+
+      projectName: parsed.data.projectName,
+      productName: parsed.data.productName,
+      description: parsed.data.description,
+
+      prompt: "",
+
+      orientation: parsed.data.orientation,
+
+      productImagePublicId: parsed.data.productImage.publicId,
+      productImageUrl: parsed.data.productImage.secureUrl,
+
+      modelImagePublicId: parsed.data.modelImage?.publicId ?? null,
+      modelImageUrl: parsed.data.modelImage?.secureUrl ?? null,
+
+      generatedImagePublicId: null,
+      generatedImageUrl: null,
+
+      generatedVideoPublicId: null,
+      generatedVideoUrl: null,
+
+      visibility: "private",
+      status: "pending",
+
+      errorMessage: null,
+      downloads: 0,
+    });
+
+    const completed = await GenerationService.generate(generation._id.toString());
+
+    return {
+      id: completed._id.toString(),
+      generatedImageUrl: completed.generatedImageUrl,
+      status: completed.status,
+    };
+  } catch (error) {
+    await addCredits(user.clerkId, GENERATION_COST);
+
+    throw error;
+  }
 }

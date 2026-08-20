@@ -5,4 +5,5 @@ export interface CloudinaryUploadResult {
   height: number;
   format: string;
   bytes: number;
+  resourceType: "image" | "video" | "raw";
 }

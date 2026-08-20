@@ -21,6 +21,12 @@ const generationSchema = new Schema(
       trim: true,
     },
 
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
     prompt: {
       type: String,
       default: "",
@@ -33,17 +39,37 @@ const generationSchema = new Schema(
       required: true,
     },
 
+    productImagePublicId: {
+      type: String,
+      required: true,
+    },
+
     productImageUrl: {
       type: String,
       required: true,
     },
 
+    modelImagePublicId: {
+      type: String,
+      default: null,
+    },
+
     modelImageUrl: {
       type: String,
-      required: true,
+      default: null,
+    },
+
+    generatedImagePublicId: {
+      type: String,
+      default: null,
     },
 
     generatedImageUrl: {
+      type: String,
+      default: null,
+    },
+
+    generatedVideoPublicId: {
       type: String,
       default: null,
     },
@@ -67,6 +93,11 @@ const generationSchema = new Schema(
       index: true,
     },
 
+    errorMessage: {
+      type: String,
+      default: null,
+    },
+
     downloads: {
       type: Number,
       default: 0,
@@ -80,5 +111,15 @@ const generationSchema = new Schema(
 
 export type Generation = InferSchemaType<typeof generationSchema>;
 
+export type GenerationCreationData = Omit<
+  Generation,
+  "_id" | "createdAt" | "updatedAt"
+>;
+
+export type GenerationUpdateData = Partial<
+  Omit<Generation, "_id" | "createdAt" | "updatedAt">
+>;
+
 export const GenerationModel: Model<Generation> =
-  models.Generation ?? model<Generation>("Generation", generationSchema);
+  (models.Generation as Model<Generation> | undefined) ??
+  model<Generation>("Generation", generationSchema);

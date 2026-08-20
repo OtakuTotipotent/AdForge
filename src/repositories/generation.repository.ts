@@ -1,29 +1,68 @@
-import "server-only";
+import { Types } from "mongoose";
 
-import { GenerationModel } from "@/models";
+import {
+  GenerationModel,
+  type GenerationCreationData,
+  type GenerationUpdateData,
+} from "@/models";
 
 export class GenerationRepository {
-  static create(data: object) {
+  static create(data: GenerationCreationData) {
     return GenerationModel.create(data);
   }
 
-  static findById(id: string) {
-    return GenerationModel.findById(id);
+  static findByUser(userId: string) {
+    return GenerationModel.find({
+      userId: new Types.ObjectId(userId),
+    })
+      .sort({
+        createdAt: -1,
+      })
+      .lean();
   }
 
-  static findByUser(userId: string) {
-    return GenerationModel.find({ userId }).sort({
-      createdAt: -1,
-    });
+  static findPublic(limit: number) {
+    return GenerationModel.find({
+      visibility: "public",
+      status: "completed",
+      generatedImageUrl: { $ne: null },
+    })
+      .sort({
+        createdAt: -1,
+      })
+      .limit(limit)
+      .lean();
+  }
+
+  static findById(id: string) {
+    return GenerationModel.findById(id).lean();
+  }
+
+  static findByUserAndId(id: string, userId: string) {
+    if (!Types.ObjectId.isValid(id) || !Types.ObjectId.isValid(userId)) {
+      return null;
+    }
+
+    return GenerationModel.findOne({
+      _id: new Types.ObjectId(id),
+      userId: new Types.ObjectId(userId),
+    }).lean();
+  }
+
+  static update(id: string, data: GenerationUpdateData) {
+    return GenerationModel.findByIdAndUpdate(
+      id,
+      {
+        $set: data,
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    ).lean();
   }
 
   static delete(id: string) {
     return GenerationModel.findByIdAndDelete(id);
-  }
-
-  static update(id: string, data: object) {
-    return GenerationModel.findByIdAndUpdate(id, data, {
-      new: true,
-    });
   }
 }

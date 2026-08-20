@@ -1,6 +1,6 @@
 import "server-only";
 
-import { cloudinary } from ".";
+import { cloudinary } from "./client";
 
 export function createUploadSignature(folder: string) {
   const timestamp = Math.round(Date.now() / 1000);

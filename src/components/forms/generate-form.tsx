@@ -1,119 +1,175 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
-import { Button, Input, Label, Select, Textarea } from "@/components/ui";
-import { generateSchema } from "@/validators/generation";
+import { generateAdvertisement } from "@/actions/generate";
+import { CLOUDINARY_FOLDERS } from "@/constants/cloudinary";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  Select,
+  Textarea,
+} from "@/components/ui";
+import type { UploadedImage } from "@/types/image-upload";
+import {
+  generationSchema,
+  type GenerationInput,
+} from "@/validators/generation";
 
-import { uploadImage } from "@/actions/generate";
 import { ImageUpload } from "./image-upload";
 
-type FormValues = {
-  projectName: string;
-  productName: string;
-  prompt: string;
-  orientation: "portrait" | "landscape";
-};
-
 export function GenerateForm() {
-  const [productImage, setProductImage] = useState<File>();
-
-  const [modelImage, setModelImage] = useState<File>();
+  const [productImage, setProductImage] = useState<UploadedImage | null>(null);
+  const [modelImage, setModelImage] = useState<UploadedImage | null>(null);
+  const [result, setResult] = useState<{
+    id: string;
+    generatedImageUrl: string | null;
+  } | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>({
-    resolver: zodResolver(generateSchema),
+  } = useForm<GenerationInput>({
+    resolver: zodResolver(generationSchema),
     defaultValues: {
       projectName: "",
       productName: "",
-      prompt: "",
+      description: "",
       orientation: "portrait",
     },
   });
 
-  async function onSubmit(data: FormValues) {
-    if (!productImage || !modelImage) {
-      toast.error("Upload both images.");
-
+  async function onSubmit(data: GenerationInput) {
+    if (!productImage) {
+      toast.error("Upload a product image.");
       return;
     }
 
-    const productData = new FormData();
-
-    productData.append("file", productImage);
-
-    const modelData = new FormData();
-
-    modelData.append("file", modelImage);
-
     try {
-      const product = await uploadImage(productData);
+      setResult(null);
 
-      const model = await uploadImage(modelData);
+      const generated = await generateAdvertisement({
+        ...data,
+        productImage,
+        modelImage: modelImage ?? undefined,
+      });
 
-      console.log(data);
-
-      console.log(product);
-
-      console.log(model);
-
-      toast.success("Images uploaded.");
-    } catch {
-      toast.error("Upload failed.");
+      setResult({
+        id: generated.id,
+        generatedImageUrl: generated.generatedImageUrl ?? null,
+      });
+      toast.success("Advertisement generated successfully.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to generate advertisement.",
+      );
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-2">
-        <Label>Project Name</Label>
+        <Label htmlFor="projectName">Project Name</Label>
 
-        <Input {...register("projectName")} />
+        <Input id="projectName" {...register("projectName")} />
 
-        <p className="text-sm text-red-500">{errors.projectName?.message}</p>
+        {errors.projectName && (
+          <p className="text-sm text-red-500">{errors.projectName.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <Label>Product Name</Label>
+        <Label htmlFor="productName">Product Name</Label>
 
-        <Input {...register("productName")} />
+        <Input id="productName" {...register("productName")} />
 
-        <p className="text-sm text-red-500">{errors.productName?.message}</p>
+        {errors.productName && (
+          <p className="text-sm text-red-500">{errors.productName.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <Label>Description</Label>
+        <Label htmlFor="description">Description</Label>
 
-        <Textarea {...register("prompt")} />
+        <Textarea id="description" {...register("description")} />
 
-        <p className="text-sm text-red-500">{errors.prompt?.message}</p>
+        {errors.description && (
+          <p className="text-sm text-red-500">{errors.description.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <Label>Orientation</Label>
+        <Label htmlFor="orientation">Orientation</Label>
 
-        <Select {...register("orientation")}>
+        <Select id="orientation" {...register("orientation")}>
           <option value="portrait">Portrait</option>
-
           <option value="landscape">Landscape</option>
         </Select>
+
+        {errors.orientation && (
+          <p className="text-sm text-red-500">{errors.orientation.message}</p>
+        )}
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <ImageUpload title="Product Image" onFile={setProductImage} />
+        <ImageUpload
+          label="Product Image"
+          folder={CLOUDINARY_FOLDERS.PRODUCTS}
+          value={productImage}
+          onChange={setProductImage}
+        />
 
-        <ImageUpload title="Model Image" onFile={setModelImage} />
+        <ImageUpload
+          label="Model Image"
+          folder={CLOUDINARY_FOLDERS.MODELS}
+          value={modelImage}
+          onChange={setModelImage}
+        />
       </div>
 
       <Button type="submit" disabled={isSubmitting}>
-        Generate Advertisement
+        {isSubmitting ? "Generating..." : "Generate Advertisement"}
       </Button>
+
+      {result && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Generated Advertisement</CardTitle>
+            <CardDescription>
+              Your advertisement is ready and saved to Collections.
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            {result.generatedImageUrl ? (
+              <Image
+                src={result.generatedImageUrl}
+                alt="Generated advertisement"
+                width={1200}
+                height={1200}
+                className="w-full rounded-lg object-cover"
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Generation completed, but no image URL was returned.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </form>
   );
 }

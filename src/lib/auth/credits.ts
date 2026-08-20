@@ -1,9 +1,47 @@
+import "server-only";
+
+import { UserModel } from "@/models";
 import { GENERATION_COST } from "@/constants/credits";
 
-export function hasEnoughCredits(credits: number) {
+export async function deductCredits(
+  clerkId: string,
+  amount: number,
+): Promise<boolean> {
+  const result = await UserModel.updateOne(
+    {
+      clerkId,
+      credits: { $gte: amount },
+    },
+    {
+      $inc: {
+        credits: -amount,
+      },
+    },
+  );
+
+  return result.modifiedCount === 1;
+}
+
+export async function addCredits(
+  clerkId: string,
+  amount: number,
+): Promise<void> {
+  await UserModel.updateOne(
+    {
+      clerkId,
+    },
+    {
+      $inc: {
+        credits: amount,
+      },
+    },
+  );
+}
+
+export function hasEnoughCredits(credits: number): boolean {
   return credits >= GENERATION_COST;
 }
 
-export function remainingCredits(credits: number) {
-  return credits - GENERATION_COST;
+export function remainingCredits(credits: number): number {
+  return Math.max(0, credits - GENERATION_COST);
 }
