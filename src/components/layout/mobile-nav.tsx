@@ -21,7 +21,7 @@ export function MobileNav() {
   return (
     <nav
       aria-label="Primary navigation"
-      className="flex gap-1 overflow-x-auto py-2 [scrollbar-width:none]"
+      className="flex gap-1 overflow-x-auto py-2 scrollbar-none"
     >
       {navigation.map((item) => (
         <Link

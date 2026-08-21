@@ -21,6 +21,16 @@ export class GenerationRepository {
       .lean();
   }
 
+  static countByUser(userId: string) {
+    if (!Types.ObjectId.isValid(userId)) {
+      return 0;
+    }
+
+    return GenerationModel.countDocuments({
+      userId: new Types.ObjectId(userId),
+    });
+  }
+
   static findPublic(limit: number) {
     return GenerationModel.find({
       visibility: "public",

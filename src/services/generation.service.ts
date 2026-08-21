@@ -21,6 +21,10 @@ export class GenerationService {
     return GenerationRepository.findByUser(userId);
   }
 
+  static countUserGenerations(userId: string) {
+    return GenerationRepository.countByUser(userId);
+  }
+
   static async findPublicGenerations(limit = 24) {
     await connectToDatabase();
 
