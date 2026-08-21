@@ -4,6 +4,8 @@
 
 Create & share short-form video ads and images in bulk using Artificial Intelligence.
 
+![Landing page hero showing a clean, minimal interface with the text Create premium advertisements with AI. and action buttons Start Creating and Explore Community, set on a light gray background with a small badge above the headline and a subtle product-focused layout.](./public/preview.png "AdForge-AI Homepage")
+
 ## Primary Users
 
 - Digital marketers
